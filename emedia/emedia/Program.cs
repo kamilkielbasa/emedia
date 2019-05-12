@@ -11,14 +11,26 @@ namespace emedia
         static void Main(string[] args)
         {
             string path = @"C:\Users\kielbkam\Desktop\semestr 6\emedia\emedia\emedia\";
-            string file1 = "Yamaha-V50-Rock-Beat-120bpm.wav";
-            string file2 = "Yamaha-V50-Rock-Beat-120bpm2.wav";
+            string originalFIle = "11k16bitpcm.wav";
+            string encodedFile = "encodedWAVFile.wav";
+            string decodedFile = "decodedWAVFile.wav";
 
-            WAVFile wavFile = new WAVReader(path + file1).ReadWAVFile();
+            WAVFile wavFile = new WAVReader(path + originalFIle).ReadWAVFile(false);
             wavFile.DisplayHeader();
 
-            WAVWriter wavWriter = new WAVWriter(path + file2);
-            wavWriter.WriteWAVFile(wavFile);
+            WAVFile cipheredWavFile = wavFile;
+            float[] encoded = Cipher.getCipheredData(cipheredWavFile.Data);
+            Data dataModifiyer = new Data();
+            cipheredWavFile.Data = dataModifiyer.Normalize(encoded);
+            WAVWriter wavWriter = new WAVWriter(path + encodedFile);
+            wavWriter.WriteWAVFile(cipheredWavFile);
+
+            WAVFile decipheredWavFile = new WAVReader(path + encodedFile).ReadWAVFile(true);
+            float[] decipheredFloats = dataModifiyer.Denormalize(decipheredWavFile.Data);
+            decipheredWavFile.Data = Cipher.getDecipheredData(decipheredFloats);
+
+            WAVWriter wavWriterForDecoded = new WAVWriter(path + decodedFile);
+            wavWriterForDecoded.WriteWAVFile(decipheredWavFile);
 
             Console.WriteLine("Finished");
             Console.ReadKey();

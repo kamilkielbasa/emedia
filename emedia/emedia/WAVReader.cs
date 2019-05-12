@@ -29,7 +29,7 @@ namespace emedia
             return Encoding.UTF8.GetString(bytes);
         }
 
-        public WAVFile ReadWAVFile()
+        public WAVFile ReadWAVFile(bool isEncoded)
         {
             WAVFile wavFile = new WAVFile();
 
@@ -50,7 +50,9 @@ namespace emedia
                 wavFile.BitsPerSample = binaryReader.ReadUInt16();
                 wavFile.Subchunk2ID = ConvertIntToString(ReverseEndianness(binaryReader.ReadInt32()));
                 wavFile.Subchunk2Size = binaryReader.ReadUInt32();
-                wavFile.Data = binaryReader.ReadBytes((int)wavFile.Subchunk2Size);
+                wavFile.Data = isEncoded == true ?
+                    binaryReader.ReadBytes((int)wavFile.Subchunk2Size * 4) :
+                    binaryReader.ReadBytes((int)wavFile.Subchunk2Size);
             }
 
             return wavFile;
