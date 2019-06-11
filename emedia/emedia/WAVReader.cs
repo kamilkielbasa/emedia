@@ -17,6 +17,7 @@ namespace emedia
             this.pathToWAVFile = pathToWAVFile;
         }
 
+        // odwrócenie endianess'ów
         private int ReverseEndianness(int value)
         {
             return BinaryPrimitives.ReverseEndianness(value);
@@ -50,8 +51,10 @@ namespace emedia
                 wavFile.BitsPerSample = binaryReader.ReadUInt16();
                 wavFile.Subchunk2ID = ConvertIntToString(ReverseEndianness(binaryReader.ReadInt32()));
                 wavFile.Subchunk2Size = binaryReader.ReadUInt32();
+                // jesli enkodujemy to musimy zwiekszyc rozmiar ramki danych samego pliku WAVE.
+                // W naszym przypadku jest to double (8 bajtow) dlatego sam rozmiar mnozymi razy sizeof(double).
                 wavFile.Data = isEncoded == true ?
-                    binaryReader.ReadBytes((int)wavFile.Subchunk2Size * 4) :
+                    binaryReader.ReadBytes((int)wavFile.Subchunk2Size * 8) :
                     binaryReader.ReadBytes((int)wavFile.Subchunk2Size);
             }
 

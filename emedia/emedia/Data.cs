@@ -15,13 +15,16 @@ namespace emedia
             return BigInteger.TryParse(str, out number) ? number.ToByteArray() : null;
         }
 
-        public byte[] Normalize(float[] cipheredData)
+        // konwersja zaszyfrowanych danych (tablica double'i) na (tablice byte'ów)
+        // bez zmiany rozmiaru. Tak wiec na tym samym bloku pamieci zapisujemy tablice
+        // double'i natomiast wymagana jest przez format WAVE tablica bajtow.
+        public byte[] Normalize(double[] cipheredData)
         {
             List<byte[]> bytesList = new List<byte[]>();
 
             for (int i = 0; i < cipheredData.Length; ++i)
             {
-                byte[] result = new byte[4];
+                byte[] result = new byte[8];
                 byte[] r = this.GetBytes(cipheredData[i].ToString());
 
                 for (int j = 0; j < r.Length; ++j)
@@ -35,11 +38,12 @@ namespace emedia
             return bytesList.SelectMany(x => x).ToArray();
         }
 
-        public float[] Denormalize(byte[] Data)
+        // metoda lustrzne odbicie powyzszej metoda.
+        public double[] Denormalize(byte[] Data)
         {
             List<byte[]> cipheredBytes = new List<byte[]>();
 
-            for (int i = 0; i + 3 < Data.Length; i += 4)
+            for (int i = 0; i + 7 < Data.Length; i += 8)
             {
                 byte[] bytes = new byte[]
                 {
@@ -47,16 +51,20 @@ namespace emedia
                     Data[i + 1],
                     Data[i + 2],
                     Data[i + 3],
+                    Data[i + 4],
+                    Data[i + 5],
+                    Data[i + 6],
+                    Data[i + 7],
                 };
 
                 cipheredBytes.Add(bytes);
             }
 
-            List<float> floats = new List<float>();
+            List<double> floats = new List<double>();
 
             foreach (byte[] chunk in cipheredBytes)
             {
-                floats.Add(BitConverter.ToUInt32(chunk, 0));
+                floats.Add(BitConverter.ToUInt64(chunk, 0));
             }
 
             return floats.ToArray();

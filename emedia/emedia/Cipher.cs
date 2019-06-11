@@ -6,17 +6,26 @@ using System.Threading.Tasks;
 
 namespace emedia
 {
+    // klasa ta jest jedynie wrapper'em ktora posiada obiekty dzieki ktorym moze:
     public class Cipher
     {
-        public static float[] getCipheredData(byte[] Data)
+        // genreowac duze liczby pierwsze
+        public PrimeNumberGenerator generator = new PrimeNumberGenerator(16, 3);
+        // kodowac te liczby pierwsze
+        public RSA rsa;
+
+        public Cipher()
         {
-            RSA rsa = new RSA();
+            rsa = new RSA(generator.GenerateNumber(), generator.GenerateNumber());
+        }
+
+        public double[] getCipheredData(byte[] Data)
+        {
             return rsa.GetCipheredValue(Data);
         }
 
-        public static byte[] getDecipheredData(float[] Data)
+        public byte[] getDecipheredData(double[] Data)
         {
-            RSA rsa = new RSA();
             return rsa.GetDecipheredValue(Data);
         }
     }

@@ -8,6 +8,7 @@ namespace emedia
 {
     public class WAVFile
     {
+        // dane z ramki formatu WAVE
         public string ChunkId { get; set; }
         public UInt32 ChunkSize { get; set; }
         public string Format { get; set; }
@@ -23,6 +24,7 @@ namespace emedia
         public UInt32 Subchunk2Size { get; set; }
         public byte[] Data { get; set; }
 
+        // metoda do wyświetlania headeru WAVE
         public void DisplayHeader()
         {
             Console.WriteLine("ChunkId = {0}", ChunkId);
